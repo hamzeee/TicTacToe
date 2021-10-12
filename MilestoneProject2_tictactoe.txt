@@ -1,0 +1,179 @@
+def input_pos(position_list):
+    """
+    takes the input position on the board, checks whether its a number in a list
+    """
+    #starting position
+    position = "False"
+    char_list = [str(a) for a in position_list]
+    
+    # if its not a digite then the while loop continues and asks again
+    # if its not in the list then the while loop continues and asks again
+    while position.isdigit() == False or position not in char_list:
+        
+        #asks user for position of symbol
+        position = input("What position would you like to place your symbol at? :")
+        
+        #checks whether input is valid
+        if position.isdigit() == False:
+            print ("Please enter a number")
+        elif int(position) not in position_list:
+            print ("Please enter a number in the range 1-9 and ones you haven't entered before")
+                   
+    return int(position)
+
+def input_symbol():
+    
+    symbol = False
+    symbol_list = ["X","O"]
+    Player1_sym = False
+    
+    while Player1_sym not in symbol_list:
+        
+        Player1_sym = input("What symbol would you like to choose? X or O :")
+        
+        if Player1_sym not in symbol_list:
+            print("Please choose either X or O")
+            
+        if Player1_sym == "X":
+            Player2_sym = "O"
+        else:
+            Player2_sym = "X"
+            
+    return Player1_sym,Player2_sym
+
+def board_display(board_list):
+    
+    print("{} | {} | {}".format(board_list[6],board_list[7],board_list[8]))
+    print("---------")
+    print("{} | {} | {}".format(board_list[3],board_list[4],board_list[5]))
+    print("---------")
+    print("{} | {} | {}".format(board_list[0],board_list[1],board_list[2]))
+    
+
+def tictac_logic(board_list):
+    
+    count_g = 0
+
+    while count_g <= 6:
+        #checks for horizontal cases - consecutive number cases 0,1,2 - 3,4,5 - 6,7,8
+        if count_g%3 == 0:
+            if board_list[count_g:count_g+3] == ["X","X","X"] or board_list[count_g:count_g+3] == ["O","O","O"]:
+                return True
+        #checks for vertical cases
+        if count_g <= 2:
+            if board_list[count_g] == "X" and board_list[count_g+3] == "X" and board_list[count_g+6] == "X":
+                return True
+            if board_list[count_g] == "O" and board_list[count_g+3] == "O" and board_list[count_g+6] == "O":
+                return True
+                
+        count_g = count_g + 1
+        
+    #checks for diagonal cases    
+    if board_list[0] == "X" and board_list[4] == "X" and board_list[8] == "X":
+        return True
+    if board_list[0] == "O" and board_list[4] == "O" and board_list[8] == "O":
+        return True
+    if board_list[2] == "X" and board_list[4] == "X" and board_list[6] == "X":
+        return True
+    if board_list[2] == "O" and board_list[4] == "O" and board_list[6] == "O":
+        return True
+    
+    return False
+
+def writer(position,board_list,Player1_sym,Player2_sym,P1_turn):
+    """
+    writes the value to the tictac board
+    """
+    if P1_turn == True:
+        # write the symbol at the position, -1 since python index starts from 0
+        board_list[position-1] = Player1_sym
+    else:
+        board_list[position-1] = Player2_sym
+
+    return board_list
+
+def turn(P1_turn):
+    """
+    tells which players turn it is
+    """
+    P1_turn = not P1_turn
+    
+    return P1_turn
+
+def rerun():
+    """
+    checks if players want to play again
+    """
+    choice = False
+    
+    while choice not in ["Y","N"]:
+        
+        choice = input("Do you want to play again? Y or N")
+        
+        if choice not in ["Y","N"]:
+            print("Please choose either Y or N")
+        
+    return choice
+
+def tictac_game():
+    """
+    a simple game of tictac for 2 players on the same computer
+    """
+    from IPython.display import clear_output
+    
+    # the initial position list
+    board_list = [*range(1,10)]
+    
+    # Player 1 decides which symbol to use
+    symbols = input_symbol()
+    
+    # run the game at least once
+    game_choice = "Y"
+    
+    # the first turn is Player 1
+    P1_turn = True
+    # number of turns is initially 0
+    turns = 0
+    
+    
+    while turns<9:
+    
+        # take input from user for position on board
+        tictac_pos = input_pos(board_list)
+        
+        # update the board with the new position 
+        board_list = writer(tictac_pos,board_list,symbols[0],symbols[1],P1_turn)
+        
+        clear_output()
+        # show them the board
+        board_display(board_list)
+        
+        # check if anybody won
+        winner = tictac_logic(board_list)
+        
+        if winner == True:
+            if P1_turn == True:
+                print("Congratulations! Player 1 won")
+            else:
+                print("Congratulations! Player 2 won")
+            break
+        
+        # change the turn
+        P1_turn = turn(P1_turn)
+        
+        turns = turns + 1
+        
+    if winner == False:
+        print("I guess nobody won, better luck next time kiddo")
+    
+def tictac_ser():
+    
+    again = "Y"
+    
+    while again == "Y":
+        
+        tictac_game()
+        
+        again = rerun()
+    
+tictac_ser()
